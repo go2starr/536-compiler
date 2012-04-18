@@ -1,0 +1,126 @@
+	.text
+_f:	
+	# FN PREAMBLE
+	sw      $ra, 0($sp)	#PUSH
+	subu    $sp, $sp, 4
+	sw      $fp, 0($sp)	#PUSH
+	subu    $sp, $sp, 4
+	addu    $fp, $sp, 32	#Set FP
+	subu    $sp, $sp, 0	#Allocate space for locals
+	# FN BODY
+	# WRITE STR STMT
+	.data
+	.align 2
+.L1:
+	.asciiz "Expected output:\n1.5 2.5 3.5\n"
+	.text
+	la      $t0, .L1
+	sw      $t0, 0($sp)	#PUSH
+	subu    $sp, $sp, 4
+	lw      $a0, 4($sp)	#POP
+	addu    $sp, $sp, 4
+	li      $v0, 4	#WRITE STR
+	syscall
+	# WRITE DBL STMT
+	l.d     $f0, -4($fp)	#LW a
+	s.d     $f0, -4($sp)	#PUSH
+	subu    $sp, $sp, 8
+	l.d     $f12, 4($sp)	#POP
+	addu    $sp, $sp, 8
+	li      $v0, 3
+	syscall
+	# WRITE STR STMT
+	.data
+	.align 2
+.L2:
+	.asciiz " "
+	.text
+	la      $t0, .L2
+	sw      $t0, 0($sp)	#PUSH
+	subu    $sp, $sp, 4
+	lw      $a0, 4($sp)	#POP
+	addu    $sp, $sp, 4
+	li      $v0, 4	#WRITE STR
+	syscall
+	# WRITE DBL STMT
+	l.d     $f0, -12($fp)	#LW b
+	s.d     $f0, -4($sp)	#PUSH
+	subu    $sp, $sp, 8
+	l.d     $f12, 4($sp)	#POP
+	addu    $sp, $sp, 8
+	li      $v0, 3
+	syscall
+	# WRITE STR STMT
+	.data
+	.align 2
+.L3:
+	.asciiz " "
+	.text
+	la      $t0, .L3
+	sw      $t0, 0($sp)	#PUSH
+	subu    $sp, $sp, 4
+	lw      $a0, 4($sp)	#POP
+	addu    $sp, $sp, 4
+	li      $v0, 4	#WRITE STR
+	syscall
+	# WRITE DBL STMT
+	l.d     $f0, -20($fp)	#LW c
+	s.d     $f0, -4($sp)	#PUSH
+	subu    $sp, $sp, 8
+	l.d     $f12, 4($sp)	#POP
+	addu    $sp, $sp, 8
+	li      $v0, 3
+	syscall
+	# WRITE STR STMT
+	.data
+	.align 2
+.L4:
+	.asciiz "\n"
+	.text
+	la      $t0, .L4
+	sw      $t0, 0($sp)	#PUSH
+	subu    $sp, $sp, 4
+	lw      $a0, 4($sp)	#POP
+	addu    $sp, $sp, 4
+	li      $v0, 4	#WRITE STR
+	syscall
+	# RTN STMT
+	j       .L0		#RTN
+	# FN EXIT
+.L0:
+	lw      $ra, -24($fp)	#Load RA
+	move    $t0, $fp	#Save control link in case of int.
+	lw      $fp, -28($fp)	#Restore FP
+	move    $sp, $t0	#Restore SP
+	jr      $ra
+	.text
+main:	
+	# FN PREAMBLE
+	sw      $ra, 0($sp)	#PUSH
+	subu    $sp, $sp, 4
+	sw      $fp, 0($sp)	#PUSH
+	subu    $sp, $sp, 4
+	addu    $fp, $sp, 8	#Set FP
+	subu    $sp, $sp, 0	#Allocate space for locals
+	# FN BODY
+	li.d    $f0, 1.5	#DBLLIT
+	s.d     $f0, -4($sp)	#PUSH
+	subu    $sp, $sp, 8
+	li.d    $f0, 2.5	#DBLLIT
+	s.d     $f0, -4($sp)	#PUSH
+	subu    $sp, $sp, 8
+	li.d    $f0, 3.5	#DBLLIT
+	s.d     $f0, -4($sp)	#PUSH
+	subu    $sp, $sp, 8
+	jal     _f
+	sw      $v0, 0($sp)	#PUSH
+	subu    $sp, $sp, 4
+	l.d     $f0, 4($sp)	#POP
+	addu    $sp, $sp, 8
+	# FN EXIT
+.L5:
+	lw      $ra, 0($fp)	#Load RA
+	move    $t0, $fp	#Save control link in case of int.
+	lw      $fp, -4($fp)	#Restore FP
+	move    $sp, $t0	#Restore SP
+	jr      $ra
